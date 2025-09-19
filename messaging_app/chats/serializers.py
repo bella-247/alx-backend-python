@@ -31,6 +31,12 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ["id", "conversation", "sender", "message_body", "sent_at"]
 
+    def validate_message_body(self, value):
+        """Ensure message body is not empty or only whitespace."""
+        if not value or not value.strip():
+            raise serializers.ValidationError("Message body cannot be empty.")
+        return value
+
 
 class ConversationSerializer(serializers.ModelSerializer):
     """
@@ -42,7 +48,16 @@ class ConversationSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(
         many=True, read_only=True
     )  # nest messages within conversation
+    # include a computed field for the most recent message in the conversation
+    last_message = serializers.SerializerMethodField()
 
     class Meta:
         model = Conversation
-        fields = ["id", "participants", "created_at", "messages"]
+        fields = ["id", "participants", "created_at", "messages", "last_message"]
+
+    def get_last_message(self, obj):
+        """Return the serialized last message or None if no messages exist."""
+        last = obj.messages.order_by('-sent_at').first()
+        if not last:
+            return None
+        return MessageSerializer(last).data
