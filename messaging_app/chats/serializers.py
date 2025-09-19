@@ -26,6 +26,7 @@ class MessageSerializer(serializers.ModelSerializer):
     """
 
     sender = serializers.StringRelatedField(read_only=True)
+    message_body = serializers.CharField()
 
     class Meta:
         model = Message
