@@ -1,0 +1,237 @@
+{
+    "info": {
+        "_postman_id": "f0b2a4f3-1234-5678-9abc-abcdef123456",
+        "name": "Messaging App API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Postman collection for testing messaging_app API endpoints with JWT authentication."
+    },
+    "item": [
+        {
+            "name": "Register User",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/auth/register/",
+                    "host": ["{{base_url}}"],
+                    "path": ["auth", "register"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"username\": \"bella\",\n  \"email\": \"bella@example.com\",\n  \"password\": \"test12345\"\n}"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Login User (JWT)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/auth/token/",
+                    "host": ["{{base_url}}"],
+                    "path": ["auth", "token"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"username\": \"bella\",\n  \"password\": \"test12345\"\n}"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Conversations",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/conversations/",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create Conversation",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/conversations/",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"participants\": [1,2]\n}"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Single Conversation",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/conversations/{{conversation_id}}/",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations", "{{conversation_id}}"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Send Message",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/conversations/{{conversation_id}}/messages/",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations", "{{conversation_id}}", "messages"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"message_body\": \"Hello Mia ❤️\"\n}"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Messages (Paginated & Filtered)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/conversations/{{conversation_id}}/messages/?page=1&page_size=5&search=hello",
+                    "host": ["{{base_url}}"],
+                    "path": [
+                        "conversations",
+                        "{{conversation_id}}",
+                        "messages"
+                    ],
+                    "query": [
+                        { "key": "page", "value": "1" },
+                        { "key": "page_size", "value": "5" },
+                        { "key": "search", "value": "hello" }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Single Message",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/messages/{{message_id}}/",
+                    "host": ["{{base_url}}"],
+                    "path": ["messages", "{{message_id}}"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Update Message",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/messages/{{message_id}}/",
+                    "host": ["{{base_url}}"],
+                    "path": ["messages", "{{message_id}}"]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"message_body\": \"Updated message content\"\n}"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Delete Message",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/messages/{{message_id}}/",
+                    "host": ["{{base_url}}"],
+                    "path": ["messages", "{{message_id}}"]
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        { "key": "base_url", "value": "http://127.0.0.1:8000/api" },
+        { "key": "jwt_token", "value": "" },
+        { "key": "conversation_id", "value": "" },
+        { "key": "message_id", "value": "" }
+    ]
+}
