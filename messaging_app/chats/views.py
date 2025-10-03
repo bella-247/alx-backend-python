@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 
+from .permissions import IsParticipantOfConversation
 
 # Create your views here.
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -13,7 +14,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
     # enable simple search and ordering on conversations
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['participants__username']

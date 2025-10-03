@@ -1,5 +1,5 @@
 from typing import Any
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class IsParticipantOfConversation(BasePermission):
     """
@@ -12,7 +12,10 @@ class IsParticipantOfConversation(BasePermission):
         if not request.user or not request.user.is_authenticated:
             return False
 
-        if not hasattr(obj, 'participants'):
-            return False
+        if request.method in ["PUT", "PATCH", "DELETE"]:
+            if not hasattr(obj, 'participants'):
+                return False
 
-        return obj.participants.filter(id=request.user.id).exists()
+            return obj.participants.filter(id=request.user.id).exists()
+        
+        return True
