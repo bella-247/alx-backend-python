@@ -1,21 +1,18 @@
-from django.urls import path, include
-from rest_framework import routers
-from rest_framework_nested import routers as nested_routers
-from .views import ConversationViewSet, MessageViewSet
+from django.urls import path
 
-
-# Create a router and register our viewsets with it.
-router = routers.DefaultRouter()
-router.register(r'conversations', ConversationViewSet, basename='conversation')
-# keep a top-level messages endpoint as well
-router.register(r'messages', MessageViewSet, basename='message')
-
-# Nested router to list/create messages under a specific conversation:
-conversation_router = nested_routers.NestedDefaultRouter(router, r'conversations', lookup='conversation')
-conversation_router.register(r'messages', MessageViewSet, basename='conversation-messages')
-
-# The API URLs are now determined automatically by the router and nested router.
+from .views import conversation_detail, conversation_list_create, message_list_create, message_detail
 urlpatterns = [
-    path('', include(router.urls)),
-    path('', include(conversation_router.urls)),
+    path("conversations/", conversation_list_create, name="conversation-list"),
+    path(
+        "conversations/<uuid:conversation_id>/messages/",
+        message_list_create,
+        name="conversation-messages",
+    ),
+    path(
+        "conversations/<uuid:conversation_id>/",
+        conversation_detail,
+        name="conversation-detail",
+    ),
+    path("messages/", message_list_create, name="message-list"),
+    path("messages/<uuid:message_id>/", message_detail, name="message-detail"),
 ]

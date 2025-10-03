@@ -12,7 +12,7 @@ class IsParticipantOfConversation(BasePermission):
         if not request.user or not request.user.is_authenticated:
             return False
 
-        if request.method in ["PUT", "PATCH", "DELETE"]:
+        if request.method in [*SAFE_METHODS, "PUT", "PATCH", "DELETE"]:
             if not hasattr(obj, 'participants'):
                 return False
 
