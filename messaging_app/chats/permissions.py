@@ -1,6 +1,6 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework import permissions
 
-class IsParticipantOfConversation(BasePermission):
+class IsParticipantOfConversation(permissions.BasePermission):
     """
     Custom permission to only allow participants of a conversation to access it.
     """
@@ -11,7 +11,7 @@ class IsParticipantOfConversation(BasePermission):
         if not request.user or not request.user.is_authenticated:
             return False
 
-        if request.method in [*SAFE_METHODS, "PUT", "PATCH", "DELETE"]:
+        if request.method in [*permissions.SAFE_METHODS, "PUT", "PATCH", "DELETE"]:
             if not hasattr(obj, 'participants'):
                 return False
 
