@@ -7,6 +7,7 @@ import time as time_module
 from datetime import date, datetime
 from collections import deque
 from threading import Lock
+from typing import Deque, Dict
 
 from django.conf import settings
 from django.http import HttpResponseForbidden, JsonResponse
@@ -54,19 +55,19 @@ class RequestLoggingMiddleware:
             # avoid double logging into root handlers
             self.logger.propagate = False
 
-        def __call__(self, request):
-            user = getattr(request, "user", None)
-            if user and getattr(user, "is_authenticated", False):
-                user_str = getattr(user, "username", str(user))
-            else:
-                user_str = "Anonymous"
+    def __call__(self, request):
+        user = getattr(request, "user", None)
+        if user and getattr(user, "is_authenticated", False):
+            user_str = getattr(user, "username", str(user))
+        else:
+            user_str = "Anonymous"
 
-            self.logger.info(
-                f"{datetime.now()} - User: {user_str} - Path: {request.path}"
-            )
+        self.logger.info(
+            f"{datetime.now()} - User: {user_str} - Path: {request.path}"
+        )
 
-            response = self.get_response()
-            return response
+        response = self.get_response(request)
+        return response
 
 
 # Restrict Access By Time Middleware
@@ -121,9 +122,8 @@ class OffensiveLanguageFilterMiddleware:
         self.get_response = get_response
         self.max_messages = getattr(settings, "MAX_MESSAGES_PER_WINDOW", 5)
         self.window = getattr(settings, "MESSAGE_WINDOW_SECONDS", 60)
-        self.ip_records = dict[str, deque] = (
-            {}
-        )  # pyright: ignore[reportGeneralTypeIssues]
+        # annotate ip_records properly and initialize as empty dict
+        self.ip_records: Dict[str, Deque[float]] = {}
         self.lock = Lock()
 
     def __call__(self, request):

@@ -53,12 +53,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "chats.core.middleware.middleware.RestrictAccessByTimeMiddleware",
-    "chats.core.middleware.middleware.RateLimitMiddleware",
-    "chats.core.middleware.middleware.RoleBasedAccessMiddleware",
+    "chats.core.middleware.middleware.OffensiveLanguageFilterMiddleware",
+    "chats.core.middleware.middleware.RolePermissionsMiddleware",
 ]
 
 if DEBUG:
-    MIDDLEWARE += "chats.core.middleware.middleware.RequestLoggingMiddleware"
+    # append as a list (not a string) to avoid iterating characters
+    MIDDLEWARE += [
+        "chats.core.middleware.middleware.RequestLoggingMiddleware"
+    ]
     
 
 ROOT_URLCONF = 'messaging_app.urls'
