@@ -52,15 +52,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "chats.core.middleware.middleware.RestrictAccessByTimeMiddleware",
-    "chats.core.middleware.middleware.OffensiveLanguageFilterMiddleware",
-    "chats.core.middleware.middleware.RolePermissionsMiddleware",
+    "chats.middleware.RestrictAccessByTimeMiddleware",
+    "chats.middleware.OffensiveLanguageFilterMiddleware",
+    "chats.middleware.RolePermissionsMiddleware",
 ]
 
 if DEBUG:
     # append as a list (not a string) to avoid iterating characters
     MIDDLEWARE += [
-        "chats.core.middleware.middleware.RequestLoggingMiddleware"
+        "chats.middleware.RequestLoggingMiddleware"
     ]
     
 
