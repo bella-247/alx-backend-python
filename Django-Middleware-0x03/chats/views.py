@@ -12,21 +12,37 @@ from .serializers import ConversationSerializer, MessageSerializer
 def conversation_list_create(request):
     """List all conversations for user, or create a new one."""
     if request.method == "GET":
-        conversations = Conversation.objects.filter(participants=request.user)
-        serializer = ConversationSerializer(conversations, many=True)
-        return Response(serializer.data)
-    elif request.method == "POST":
-        serializer = ConversationSerializer(data=request.data)
-        if serializer.is_valid():
-            conversation = serializer.save()
-            # conversation.participants[]
+        try:
+            conversations = Conversation.objects.filter(participants=request.user)
+            serializer = ConversationSerializer(conversations, many=True)
+            return Response(serializer.data)
+
+        except Exception as e:
+            print(str(e))
             return Response(
-                ConversationSerializer(conversation).data,
-                status=status.HTTP_201_CREATED,
+                {"detail": "Server error.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    elif request.method == "POST":
+        try:
+            serializer = ConversationSerializer(data=request.data)
+            if serializer.is_valid():
+                conversation = serializer.save()
+                # conversation.participants[]
+                return Response(
+                    ConversationSerializer(conversation).data,
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+        except Exception as e:
+            print(str(e))
+            return Response(
+                {"detail": "Server error.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def conversation_detail(request, conversation_id):
@@ -61,19 +77,29 @@ def conversation_detail(request, conversation_id):
 def message_list_create(request, conversation_id=None):
     """List all messages or create a new one (optionally filtered by conversation)."""
     if request.method == "GET":
-        if conversation_id:
-            messages = Message.objects.filter(
-                conversation__conversation_id=conversation_id
+        try:
+            if conversation_id:
+                messages = Message.objects.filter(
+                    conversation__conversation_id=conversation_id
+                )
+            else:
+                messages = Message.objects.all()
+            serializer = MessageSerializer(messages, many=True)
+            return Response(serializer.data)
+        
+        except Exception as e:
+            print(str(e))
+            return Response(
+                {"detail": "Server error.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        else:
-            messages = Message.objects.all()
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
+            
     elif request.method == "POST":
         if conversation_id:
             try:
                 conversation = Conversation.objects.get(conversation_id=conversation_id)
-            except Conversation.DoesNotExist:
+            except Conversation.DoesNotExist as e:
+                print(str(e))
                 return Response(
                     {"detail": "Conversation not found."},
                     status=status.HTTP_404_NOT_FOUND,
