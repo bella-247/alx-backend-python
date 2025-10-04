@@ -146,7 +146,7 @@ class OffensiveLanguageMiddleware:
 
 
 # -- Role Permissions Middleware
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     """
     Ensures only users with admin/moderator roles can access certain protected chat actions.
     Configurable via settings:

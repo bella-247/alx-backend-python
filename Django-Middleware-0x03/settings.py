@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "chats.middleware.RestrictAccessByTimeMiddleware",
     "chats.middleware.OffensiveLanguageMiddleware",
-    "chats.middleware.RolePermissionMiddleware",
+    "chats.middleware.RolepermissionMiddleware",
 ]
 
 if DEBUG:
