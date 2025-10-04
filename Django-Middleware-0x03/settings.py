@@ -52,8 +52,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "chats.middleware.RestrictAccessByTimeMiddleware",
-    "chats.middleware.OffensiveLanguageFilterMiddleware",
-    "chats.middleware.RolePermissionsMiddleware",
+    "chats.middleware.OffensiveLanguageMiddleware",
+    "chats.middleware.RolePermissionMiddleware",
 ]
 
 if DEBUG:

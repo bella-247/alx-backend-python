@@ -99,7 +99,7 @@ class RestrictAccessByTimeMiddleware:
 
 
 # Offensive Language Middleware
-class OffensiveLanguageFilterMiddleware:
+class OffensiveLanguageMiddleware:
     """
     Implements a simple rate limiter: counts POST requests (assumed to be "send message") by IP and block
     if they exceed MAX_MESSAGES_PER_WINDOW within MESSAGE_WINDOW_SECONDS.
@@ -146,7 +146,7 @@ class OffensiveLanguageFilterMiddleware:
 
 
 # -- Role Permissions Middleware
-class RolePermissionsMiddleware:
+class RolePermissionMiddleware:
     """
     Ensures only users with admin/moderator roles can access certain protected chat actions.
     Configurable via settings:
