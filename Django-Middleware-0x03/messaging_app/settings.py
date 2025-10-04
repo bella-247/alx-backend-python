@@ -39,14 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
-    # "cors-headers",
     
     # Local apps
     "chats"
 ]
 
 MIDDLEWARE = [
-    # "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +52,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "chats.core.middleware.middleware.RestrictAccessByTimeMiddleware",
+    "chats.core.middleware.middleware.RateLimitMiddleware",
+    "chats.core.middleware.middleware.RoleBasedAccessMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE += "chats.core.middleware.middleware.RequestLoggingMiddleware"
+    
 
 ROOT_URLCONF = 'messaging_app.urls'
 
