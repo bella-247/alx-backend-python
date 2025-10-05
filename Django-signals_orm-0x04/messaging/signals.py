@@ -1,13 +1,13 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_delete
 from django.db.models import Q
-from .models import Message, Notifications, User, MessageHistory
+from .models import Message, Notification, User, MessageHistory
 
 @receiver(post_save, sender=Message)
 def notify_message_creation(sender, instance, created, **kwargs):
     if created:
         print(f'New message created: {instance}')
-        Notifications.objects.create(user=instance.receiver, message=instance)
+        Notification.objects.create(user=instance.receiver, message=instance)
 
 # Example of pre_save signal to log message updates
 @receiver(pre_save, sender=Message)
@@ -27,6 +27,6 @@ def log_message_edit(sender, instance, **kwargs):
 @receiver(post_delete, sender=User)
 def cleanup_user_data(sender, instance, **kwargs):
     Message.objects.filter(Q(sender=instance) | Q(receiver=instance)).delete()
-    Notifications.objects.filter(user=instance).delete()
+    Notification.objects.filter(user=instance).delete()
     MessageHistory.objects.filter(message__sender=instance).delete()
     print(f'All messages, history and notifications for user {instance} have been deleted.')

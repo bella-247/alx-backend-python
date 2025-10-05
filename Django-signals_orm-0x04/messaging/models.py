@@ -52,7 +52,7 @@ class MessageHistory(models.Model):
         return f"History of message {self.message.id} at {self.edited_at}"
 
 
-class Notifications(models.Model):
+class Notification(models.Model):
     user = models.ForeignKey(
         User, related_name="notifications", on_delete=models.CASCADE
     )

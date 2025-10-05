@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Message, Notifications, MessageHistory
+from .models import User, Message, Notification, MessageHistory
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +15,7 @@ class MessageSerializer(serializers.ModelSerializer):
         
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Notifications
+        model = Notification
         fields = ['id', 'user', 'message', 'read', 'timestamp']
         read_only_fields = ["id", "user", 'timestamp']
         
