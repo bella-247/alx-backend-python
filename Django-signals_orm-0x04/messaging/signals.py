@@ -28,5 +28,5 @@ def log_message_edit(sender, instance, **kwargs):
 def cleanup_user_data(sender, instance, **kwargs):
     Message.objects.filter(Q(sender=instance) | Q(receiver=instance)).delete()
     Notification.objects.filter(user=instance).delete()
-    MessageHistory.objects.filter(message__sender=instance).delete()
+    MessageHistory.objects.filter(edited_by=instance).delete()
     print(f'All messages, history and notifications for user {instance} have been deleted.')
