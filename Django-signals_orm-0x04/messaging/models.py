@@ -1,14 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from .managers import UnreadMessagesManager
 
 # Create your models here.
-class UnreadMessagesManager(models.Manager):
-    def for_user(self, user):
-        return self.filter(receiver=user, read=False).only(
-            "id", "content", "sender", "timestamp"
-        )
-
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)

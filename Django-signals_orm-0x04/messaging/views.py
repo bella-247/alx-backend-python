@@ -52,6 +52,7 @@ def message_edit(request, message_id):
         {"error": "Invalid request method"}, status=status.HTTP_400_BAD_REQUEST
     )
 
+
 def delete_message(request, message_id):
     if request.method == "DELETE":
         message = get_object_or_404(
@@ -59,11 +60,13 @@ def delete_message(request, message_id):
         )
         message.delete()
         return JsonResponse(
-            {"message": "Message deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Message deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT,
         )
     return JsonResponse(
         {"error": "Invalid request method"}, status=status.HTTP_400_BAD_REQUEST
     )
+
 
 def message_mark_read(request, message_id):
     if request.method == "POST":
@@ -77,6 +80,7 @@ def message_mark_read(request, message_id):
         {"error": "Invalid request method"}, status=status.HTTP_400_BAD_REQUEST
     )
 
+
 def message_detail(request, message_id):
     message = get_object_or_404(Message, id=message_id)
     serializer = MessageSerializer(message)
@@ -88,14 +92,17 @@ def message_detail(request, message_id):
 def message_list(request):
     messages = Message.objects.filter(
         Q(sender=request.user) | Q(receiver=request.user)
-    ).order_by("-timestamp")
+    ).select_related("sender", "receiver", "parent_message").prefetch_related("replies", "history").order_by("-timestamp")
+    
     serializer = MessageSerializer(messages, many=True)
     return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
 
 @login_required
 def unread_messages(request):
-    unread_msgs = Message.unread.for_user(request.user)
+    unread_msgs = Message.unread.unread_for_user(request.user).only(
+        "id", "content", "sender", "timestamp"
+    )
     serializer = MessageSerializer(unread_msgs, many=True)
     return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
