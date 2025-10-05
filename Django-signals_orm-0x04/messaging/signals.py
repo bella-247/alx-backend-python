@@ -1,6 +1,6 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_delete
-from sympy import Q
+from django.db.models import Q
 from .models import Message, Notifications, User, MessageHistory
 
 @receiver(post_save, sender=Message)
