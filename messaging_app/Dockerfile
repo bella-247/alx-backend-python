@@ -12,6 +12,6 @@ COPY . .
 
 # Step 5: Expose port Django runs on
 EXPOSE 8000
-
+# -p 
 # Step 6: Start Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
