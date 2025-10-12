@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 8000
 # -p 
 # Step 6: Start Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
+CMD "python3 manage.py runserver 0.0.0.0:8000"

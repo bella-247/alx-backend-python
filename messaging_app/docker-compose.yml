@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret123
-      MYSQL_DATABASE: messaging_db
+      MYSQL_DB: messaging_db
       MYSQL_ROOT_PASSWORD: root123
     volumes:
       - db_data:/var/lib/mysql
