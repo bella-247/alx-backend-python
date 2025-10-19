@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# ----------------------------------------
+# Script: kubctl-0x03
+# Purpose: Rolling update of blue deployment
+# ----------------------------------------
+
+DEPLOYMENT_NAME="messaging-app-blue"
+SERVICE_NAME="messaging-service"
+NAMESPACE="default"
+URL="http://localhost:8000"  # adjust if Minikube or remote
+
+# 1️⃣ Apply updated deployment
+echo "Applying updated deployment (image 2.0)..."
+kubectl apply -f blue_deployment.yaml
+
+# 2️⃣ Trigger rolling update
+echo "Monitoring rolling update..."
+kubectl rollout status deployment/$DEPLOYMENT_NAME
+
+# 3️⃣ Test uptime with curl for 10 seconds
+echo "Testing app uptime during rolling update..."
+END=$((SECONDS+10))
+while [ $SECONDS -lt $END ]; do
+    curl -s -o /dev/null -w "%{http_code}\n" $URL
+    sleep 1
+done
+
+# 4️⃣ Verify current pods
+echo "Current pods after rolling update:"
+kubectl get pods -l app=messaging-app,version=blue
