@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: messaging-app
-          image: bella247/messaging_app:1.0
+          image: bella247/messaging_app:2.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
