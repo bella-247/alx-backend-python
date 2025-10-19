@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# ----------------------------------------
+# Script: kubctl-0x01
+# Purpose: Scale Django deployment and verify
+# ----------------------------------------
+
+# 1️⃣ Scale the deployment to 3 replicas
+echo "Scaling messaging-app deployment to 3 replicas..."
+kubectl scale deployment messaging-app --replicas=3
+
+# 2️⃣ Wait a few seconds for pods to start
+echo "Waiting 10 seconds for new pods to start..."
+sleep 10
+
+# 3️⃣ Verify pods are running
+echo "Current pods status:"
+kubectl get pods -l app=messaging-app
+
+# 4️⃣ Optional: Perform load testing using wrk (if installed)
+# Replace <service-ip> and <port> with your ClusterIP or minikube URL
+SERVICE_IP=$(kubectl get svc messaging-service -o jsonpath='{.spec.clusterIP}')
+PORT=8000
+if command -v wrk &> /dev/null; then
+    echo "Running wrk load test on http://${SERVICE_IP}:${PORT}..."
+    wrk -t2 -c10 -d10s http://${SERVICE_IP}:${PORT}
+else
+    echo "wrk not installed, skipping load test."
+fi
+
+# 5️⃣ Monitor resource usage of pods
+echo "Resource usage of pods:"
+kubectl top pods -l app=messaging-app
