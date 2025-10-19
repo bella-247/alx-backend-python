@@ -1,4 +1,0 @@
-#!/bin/bash
-minikube start --driver=docker
-kubectl cluster-info
-kubectl get pods
