@@ -1,0 +1,80 @@
+pipeline {
+agent any
+
+environment {
+    // Update these environment variables
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')   // Jenkins credentials ID
+    DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
+    DOCKERHUB_PASSWORD = "${DOCKERHUB_CREDENTIALS_PSW}"
+    IMAGE_NAME = "messaging_app"
+    REPO_URL = "https://github.com/<your-username>/alx-backend-python.git"
+}
+
+stages {
+
+    stage('Checkout Code') {
+        steps {
+            echo 'Cloning repository...'
+            git branch: 'main', url: "${REPO_URL}"
+        }
+    }
+
+    stage('Set Up Python Environment') {
+        steps {
+            echo 'Setting up Python environment...'
+            sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                pip install pytest pytest-django
+            '''
+        }
+    }
+
+    stage('Run Tests') {
+        steps {
+            echo 'Running tests with pytest...'
+            sh '''
+                . venv/bin/activate
+                pytest --junitxml=report.xml
+            '''
+        }
+        post {
+            always {
+                echo 'Archiving test results...'
+                junit 'report.xml'
+            }
+        }
+    }
+
+    stage('Build Docker Image') {
+        steps {
+            echo 'Building Docker image...'
+            sh '''
+                docker build -t ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest .
+            '''
+        }
+    }
+
+    stage('Push Docker Image') {
+        steps {
+            echo 'Pushing Docker image to Docker Hub...'
+            sh '''
+                echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+                docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
+            '''
+        }
+    }
+}
+
+post {
+    success {
+        echo 'Pipeline completed successfully!'
+    }
+    failure {
+        echo 'Pipeline failed. Check logs for details.'
+    }
+}
+
+}
