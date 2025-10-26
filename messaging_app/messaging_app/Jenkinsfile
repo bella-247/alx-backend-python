@@ -1,9 +1,12 @@
 pipeline {
 agent any
 
+
 environment {
-    // Update these environment variables
-    DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')   // Jenkins credentials ID
+    // Jenkins credentials for DockerHub and GitHub
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+    GITHUB_CREDENTIALS = credentials('github-credentials')
+
     DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
     DOCKERHUB_PASSWORD = "${DOCKERHUB_CREDENTIALS_PSW}"
     IMAGE_NAME = "messaging_app"
@@ -14,35 +17,35 @@ stages {
 
     stage('Checkout Code') {
         steps {
-            echo 'Cloning repository...'
-            git branch: 'main', url: "${REPO_URL}"
+            echo 'Cloning repository from GitHub...'
+            git branch: 'main', credentialsId: 'github-credentials', url: "${REPO_URL}"
         }
     }
 
-    stage('Set Up Python Environment') {
+    stage('Install Dependencies') {
         steps {
-            echo 'Setting up Python environment...'
+            echo 'Installing dependencies...'
             sh '''
                 python3 -m venv venv
                 . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install pytest pytest-django
+                pip3 install --upgrade pip
+                pip3 install -r messaging_app/requirements.txt
+                pip3 install pytest pytest-django
             '''
         }
     }
 
     stage('Run Tests') {
         steps {
-            echo 'Running tests with pytest...'
+            echo 'Running pytest...'
             sh '''
                 . venv/bin/activate
-                pytest --junitxml=report.xml
+                pytest messaging_app --junitxml=report.xml
             '''
         }
         post {
             always {
-                echo 'Archiving test results...'
+                echo 'Archiving test reports...'
                 junit 'report.xml'
             }
         }
@@ -59,7 +62,7 @@ stages {
 
     stage('Push Docker Image') {
         steps {
-            echo 'Pushing Docker image to Docker Hub...'
+            echo 'Pushing image to DockerHub...'
             sh '''
                 echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
                 docker push ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
@@ -70,10 +73,10 @@ stages {
 
 post {
     success {
-        echo 'Pipeline completed successfully!'
+        echo 'Pipeline completed successfully ✅'
     }
     failure {
-        echo 'Pipeline failed. Check logs for details.'
+        echo 'Pipeline failed ❌ — check logs for details.'
     }
 }
 
